@@ -1,0 +1,27 @@
+installation et toolset
+- git / github
+- node v{16|17}
+- ts-node
+- kahoot
+- 
+
+de l'importance de l'algorithmie
+boucle "for of" et boucle "for in"
+
+iterateurs
+generateurs
+iterateurs asynchones
+generateurs asynchrones
+
+forEach
+map
+filter
+reduce et reducteur (reducers)
+implementer map avec reduce
+implementer filter avec reduce
+
+composition de fonctions
+reducteurs de haut niveau
+transducteurs (transducers)
+
+raycaster
