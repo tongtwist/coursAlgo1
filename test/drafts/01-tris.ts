@@ -46,5 +46,5 @@ function customRadixSort () {
 	for (let i = 0; i < len; i++) numbers[i] = output[i]
 }
 
-bench(5, nativeSort)
-//bench(5, customRadixSort)
+//bench(5, nativeSort)
+bench(5, customRadixSort)

@@ -66,7 +66,7 @@ export class Point implements IPoint {
 	deplace (deltaT: number) {
 		const deltaAngle: number
 			= (this.deltaPivotGauche - this.deltaPivotDroite) * Point._vPivot * deltaT * -0.001
-		this._angle = (this._angle + deltaAngle) % (Math.PI * 2)
+		this._angle = (this._angle + deltaAngle + Math.PI * 2) % (Math.PI * 2)
 		const v: [ number, number ] = this.calculeDeplacement(deltaT)
 		this._x += v[0]
 		this._y += v[1]

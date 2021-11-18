@@ -25,7 +25,7 @@ export class Point {
     }
     deplace(deltaT) {
         const deltaAngle = (this.deltaPivotGauche - this.deltaPivotDroite) * Point._vPivot * deltaT * -0.001;
-        this._angle = (this._angle + deltaAngle) % (Math.PI * 2);
+        this._angle = (this._angle + deltaAngle + Math.PI * 2) % (Math.PI * 2);
         const v = this.calculeDeplacement(deltaT);
         this._x += v[0];
         this._y += v[1];

@@ -33,7 +33,7 @@ function constructionPossible (
 	}
 	memo[objectif] = false
 	return false
-}
+} 
 
 function bench (problemes: { [p: string]: Array<string> }) {
 	for (const objectif in problemes) {
@@ -43,4 +43,4 @@ function bench (problemes: { [p: string]: Array<string> }) {
 }
 
 bench(problemesFaciles)
-//bench(problemeDifficile)
+bench(problemeDifficile)

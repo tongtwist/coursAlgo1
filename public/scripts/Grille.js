@@ -13,7 +13,12 @@ export class Grille {
         this._canvas.addEventListener("mouseup", (evt) => this._coordonneesSourisDansGrille(evt));
         this.rayons = Array(opts.nbRayons);
         this.intersections = Array(opts.nbRayons);
+        for (let i = 0; i < opts.nbRayons; i++) {
+            this.rayons[i] = { x1: 0, y1: 0, x2: 0, y2: 0 };
+            this.intersections[i] = { x: 0, y: 0, colBlock: 0, ligBlock: 0, dist: 0 };
+        }
         this.angleRayons = opts.angleRayons;
+        this._vue = opts.vue;
     }
     get data() { return this._data; }
     set data(value) {
@@ -31,7 +36,7 @@ export class Grille {
     set blockHeight(_value) { }
     get blockWidth() { return this._blockWidth; }
     set blockWidth(_value) { }
-    _lanceRayon(x, y, a, nIntersection) {
+    _lanceRayonH(x, y, centerAngle, a, nIntersection) {
         let hit = false;
         let mx = 0;
         let my = 0;
@@ -39,22 +44,23 @@ export class Grille {
         let ry = y;
         let xo = 0;
         let yo = 0;
-        const atan = -1 / Math.tan(a);
+        const tan = Math.tan(a);
+        const atan = -1 / tan;
         if (a > Math.PI) {
-            ry = Math.floor(y / this.blockHeight) * this.blockHeight - 0.0001;
+            ry = Math.floor(y / this._blockHeight) * this._blockHeight - 0.0001;
             rx = (y - ry) * atan + x;
-            yo = -this.blockHeight;
+            yo = -this._blockHeight;
             xo = -yo * atan;
         }
         if (a < Math.PI) {
-            ry = Math.floor(y / this.blockHeight) * this.blockHeight + this.blockHeight;
+            ry = Math.floor(y / this._blockHeight) * this._blockHeight + this._blockHeight;
             rx = (y - ry) * atan + x;
-            yo = this.blockHeight;
+            yo = this._blockHeight;
             xo = -yo * atan;
         }
         while (my >= 0 && my < this._data.length && !hit) {
-            mx = Math.floor(rx / this.blockWidth);
-            my = Math.floor(ry / this.blockHeight);
+            mx = Math.floor(rx / this._blockWidth);
+            my = Math.floor(ry / this._blockHeight);
             hit = my >= 0 && my < this._data.length && mx >= 0 && mx < this._data[0].length && this._data[my][mx] > 0;
             if (!hit) {
                 rx += xo;
@@ -62,25 +68,81 @@ export class Grille {
             }
             //console.log(mx, my, hit)
         }
-        this.intersections[nIntersection] = {
-            x: rx,
-            y: ry,
-            colBlock: mx,
-            ligBlock: my
-        };
-    }
-    lanceRayons(x, y, angleDebut, angleFin) {
-        const angleStep = Math.abs(angleFin - angleDebut) / this.angleRayons;
-        console.log(angleDebut, angleFin, angleStep);
-        for (let i = 0, a = angleDebut; i < this.intersections.length; a += angleStep, i++) {
-            this._lanceRayon(x, y, a, i);
-            this.rayons[i] = {
-                x1: x,
-                y1: y,
-                x2: this.intersections[i].x,
-                y2: this.intersections[i].y
-            };
+        const hhit = hit;
+        const hrx = rx;
+        const hry = ry;
+        const hmx = mx;
+        const hmy = my;
+        const hDist = Math.sqrt((hrx - x) * (hrx - x) + (hry - y) * (hry - y));
+        hit = false;
+        mx = 0;
+        my = 0;
+        rx = x;
+        ry = y;
+        xo = 0;
+        yo = 0;
+        const ntan = -tan;
+        const pi2 = Math.PI / 2;
+        const pi3 = 3 * pi2;
+        if (a > pi2 && a < pi3) {
+            rx = Math.floor(x / this._blockWidth) * this._blockWidth - 0.0001;
+            ry = (x - rx) * ntan + y;
+            xo = -this._blockWidth;
+            yo = -xo * ntan;
         }
+        if (a < pi2 || a > pi3) {
+            rx = Math.floor(x / this._blockWidth) * this._blockWidth + this._blockWidth;
+            ry = (x - rx) * ntan + y;
+            xo = this._blockWidth;
+            yo = -xo * ntan;
+        }
+        while (my >= 0 && my < this._data.length && !hit) {
+            mx = Math.floor(rx / this._blockWidth);
+            my = Math.floor(ry / this._blockHeight);
+            hit = my >= 0 && my < this._data.length && mx >= 0 && mx < this._data[0].length && this._data[my][mx] > 0;
+            if (!hit) {
+                rx += xo;
+                ry += yo;
+            }
+            //console.log(mx, my, hit)
+        }
+        const vDist = Math.sqrt((rx - x) * (rx - x) + (ry - y) * (ry - y));
+        if (vDist < hDist) {
+            this.intersections[nIntersection].x = rx;
+            this.intersections[nIntersection].y = ry;
+            this.intersections[nIntersection].colBlock = mx;
+            this.intersections[nIntersection].ligBlock = my;
+            this.intersections[nIntersection].dist = vDist;
+        }
+        else {
+            this.intersections[nIntersection].x = hrx;
+            this.intersections[nIntersection].y = hry;
+            this.intersections[nIntersection].colBlock = hmx;
+            this.intersections[nIntersection].ligBlock = hmy;
+            this.intersections[nIntersection].dist = hDist;
+        }
+        let ca = centerAngle - a;
+        if (ca < 0)
+            ca += Math.PI * 2;
+        if (ca > Math.PI * 2)
+            ca -= Math.PI * 2;
+        this.intersections[nIntersection].dist *= Math.cos(ca);
+    }
+    lanceRayons(x, y, angle) {
+        const angleStep = this.angleRayons / this.intersections.length;
+        let a = (angle - (this.angleRayons / 2) + Math.PI * 2) % (Math.PI * 2);
+        for (let i = 0; i < this.intersections.length; i++) {
+            this._lanceRayonH(x, y, angle, a, i);
+            this.rayons[i].x1 = x;
+            this.rayons[i].y1 = y;
+            this.rayons[i].x2 = this.intersections[i].x;
+            this.rayons[i].y2 = this.intersections[i].y;
+            this._vue.distances[i] = this.intersections[i].dist;
+            this._vue.hitWhat[i]
+                = this._data[this.intersections[i].ligBlock][this.intersections[i].colBlock];
+            a = (a + angleStep + Math.PI * 2) % (Math.PI * 2);
+        }
+        //console.log(this._vue.distances)
     }
     dessineGrille() {
         this._ctx.fillStyle = this.couleurFond;

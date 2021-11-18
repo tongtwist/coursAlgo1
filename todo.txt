@@ -13,15 +13,10 @@ generateurs
 iterateurs asynchones
 generateurs asynchrones
 
-forEach
 map
 filter
 reduce et reducteur (reducers)
 implementer map avec reduce
 implementer filter avec reduce
-
-composition de fonctions
-reducteurs de haut niveau
-transducteurs (transducers)
 
 raycaster
