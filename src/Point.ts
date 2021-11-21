@@ -22,7 +22,6 @@ export interface IPoint {
 export class Point implements IPoint {
 	private static _vPivot: number = 5
 	private static _vTranslation: number = 100
-	private _canvas: HTMLCanvasElement
 	private _ctx: CanvasRenderingContext2D
 	private _x: number
 	private _y: number
@@ -34,8 +33,7 @@ export class Point implements IPoint {
 	deltaRecule: number
 
 	constructor (opts: IPointConfig) {
-		this._canvas = opts.canvas
-		this._ctx = opts.canvas.getContext("2d") as CanvasRenderingContext2D
+		this._ctx = opts.canvas.getContext("2d", { alpha: false }) as CanvasRenderingContext2D
 		this._x = opts.x
 		this._y = opts.y
 		this._angle = opts.angle

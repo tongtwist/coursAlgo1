@@ -1,7 +1,6 @@
 export class Point {
     constructor(opts) {
-        this._canvas = opts.canvas;
-        this._ctx = opts.canvas.getContext("2d");
+        this._ctx = opts.canvas.getContext("2d", { alpha: false });
         this._x = opts.x;
         this._y = opts.y;
         this._angle = opts.angle;

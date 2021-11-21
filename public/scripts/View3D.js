@@ -1,7 +1,8 @@
 export class View3D {
     constructor(cfg) {
         this._canvas = cfg.canvas;
-        this._ctx = cfg.canvas.getContext("2d");
+        this._ctx = cfg.canvas.getContext("2d", { alpha: false });
+        this._rays = cfg.rays;
         this._nbColonnes = cfg.canvas.width;
         this.distances = Array(this._nbColonnes);
         this.hitWhat = Array(this._nbColonnes);
@@ -22,28 +23,40 @@ export class View3D {
     }
     dessineMurs() {
         let lastCouleur = "";
-        for (let i = 0; i < this.distances.length; i++) {
-            const block = this.hitWhat[i];
+        let i = 0;
+        for (const ray of this._rays.data) {
+            const block = ray.blockType;
             const couleur = this._blockStyles[block];
             if (couleur !== lastCouleur) {
                 if (lastCouleur !== "") {
-                    this._ctx.closePath();
-                    this._ctx.stroke();
+                    this._ctx.fill();
                 }
                 lastCouleur = couleur;
-                this._ctx.strokeStyle = couleur;
-                this._ctx.globalAlpha = 1.0;
-                this._ctx.beginPath();
+                this._ctx.fillStyle = couleur;
             }
-            const dist = this.distances[i];
+            const dist = ray.dist;
             const hauteurLigne = Math.min(this._canvas.height, 50 * this._canvas.height / dist);
             const offset = (this._canvas.height - hauteurLigne) / 2;
-            this._ctx.moveTo(i, offset);
-            this._ctx.lineTo(i, offset + hauteurLigne);
+            this._ctx.fillRect(i, offset, 1, hauteurLigne);
+            i++;
         }
+        /*for (let i = 0; i < this.distances.length; i++) {
+            const block: number = this.hitWhat[i]
+            const couleur: string = this._blockStyles[block]
+            if (couleur !== lastCouleur) {
+                if (lastCouleur !== "") {
+                    this._ctx.fill()
+                }
+                lastCouleur = couleur
+                this._ctx.fillStyle = couleur
+            }
+            const dist: number = this.distances[i]
+            const hauteurLigne: number = Math.min(this._canvas.height, 50 * this._canvas.height / dist)
+            const offset: number = (this._canvas.height - hauteurLigne) / 2
+            this._ctx.fillRect(i, offset, 1, hauteurLigne)
+        }*/
         if (lastCouleur !== "") {
-            this._ctx.closePath();
-            this._ctx.stroke();
+            this._ctx.fill();
         }
     }
     dessine() {

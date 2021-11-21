@@ -1,7 +1,7 @@
 export class Grille {
     constructor(opts) {
         this._canvas = opts.canvas;
-        this._ctx = opts.canvas.getContext("2d");
+        this._ctx = opts.canvas.getContext("2d", { alpha: false });
         this._data = opts.data;
         this._nbColonnes = opts.data[0].length;
         this._nbLignes = opts.data.length;
@@ -11,14 +11,11 @@ export class Grille {
         this._blockHeight = Math.round(this._canvas.height / this.data.length);
         this._blockWidth = Math.round(this._canvas.width / this.data[0].length);
         this._canvas.addEventListener("mouseup", (evt) => this._coordonneesSourisDansGrille(evt));
-        this.rayons = Array(opts.nbRayons);
-        this.intersections = Array(opts.nbRayons);
-        for (let i = 0; i < opts.nbRayons; i++) {
+        this.rayons = Array(opts.rays.raysNumber);
+        this._rays = opts.rays;
+        for (let i = 0; i < opts.rays.raysNumber; i++) {
             this.rayons[i] = { x1: 0, y1: 0, x2: 0, y2: 0 };
-            this.intersections[i] = { x: 0, y: 0, colBlock: 0, ligBlock: 0, dist: 0 };
         }
-        this.angleRayons = opts.angleRayons;
-        this._vue = opts.vue;
     }
     get data() { return this._data; }
     set data(value) {
@@ -66,7 +63,6 @@ export class Grille {
                 rx += xo;
                 ry += yo;
             }
-            //console.log(mx, my, hit)
         }
         const hhit = hit;
         const hrx = rx;
@@ -104,42 +100,42 @@ export class Grille {
                 rx += xo;
                 ry += yo;
             }
-            //console.log(mx, my, hit)
         }
         const vDist = Math.sqrt((rx - x) * (rx - x) + (ry - y) * (ry - y));
         if (vDist < hDist) {
-            this.intersections[nIntersection].x = rx;
-            this.intersections[nIntersection].y = ry;
-            this.intersections[nIntersection].colBlock = mx;
-            this.intersections[nIntersection].ligBlock = my;
-            this.intersections[nIntersection].dist = vDist;
+            this._rays.data[nIntersection].x = rx;
+            this._rays.data[nIntersection].y = ry;
+            this._rays.data[nIntersection].colBlock = mx;
+            this._rays.data[nIntersection].ligBlock = my;
+            this._rays.data[nIntersection].dist = vDist;
         }
         else {
-            this.intersections[nIntersection].x = hrx;
-            this.intersections[nIntersection].y = hry;
-            this.intersections[nIntersection].colBlock = hmx;
-            this.intersections[nIntersection].ligBlock = hmy;
-            this.intersections[nIntersection].dist = hDist;
+            this._rays.data[nIntersection].x = hrx;
+            this._rays.data[nIntersection].y = hry;
+            this._rays.data[nIntersection].colBlock = hmx;
+            this._rays.data[nIntersection].ligBlock = hmy;
+            this._rays.data[nIntersection].dist = hDist;
         }
         let ca = centerAngle - a;
         if (ca < 0)
             ca += Math.PI * 2;
         if (ca > Math.PI * 2)
             ca -= Math.PI * 2;
-        this.intersections[nIntersection].dist *= Math.cos(ca);
+        //console.log(ca)
+        this._rays.data[nIntersection].dist *= Math.cos(ca);
     }
     lanceRayons(x, y, angle) {
-        const angleStep = this.angleRayons / this.intersections.length;
-        let a = (angle - (this.angleRayons / 2) + Math.PI * 2) % (Math.PI * 2);
-        for (let i = 0; i < this.intersections.length; i++) {
+        const angleStep = this._rays.angleWidth / this._rays.raysNumber;
+        let a = (angle - (this._rays.angleWidth / 2) + Math.PI * 2) % (Math.PI * 2);
+        for (let i = 0; i < this.rayons.length; i++) {
             this._lanceRayonH(x, y, angle, a, i);
             this.rayons[i].x1 = x;
             this.rayons[i].y1 = y;
-            this.rayons[i].x2 = this.intersections[i].x;
-            this.rayons[i].y2 = this.intersections[i].y;
-            this._vue.distances[i] = this.intersections[i].dist;
-            this._vue.hitWhat[i]
-                = this._data[this.intersections[i].ligBlock][this.intersections[i].colBlock];
+            this.rayons[i].x2 = this._rays.data[i].x;
+            this.rayons[i].y2 = this._rays.data[i].y
+                //this._vue.distances[i] = this.intersections[i].dist
+                //this._vue.hitWhat[i]
+                = this._data[this._rays.data[i].ligBlock][this._rays.data[i].colBlock];
             a = (a + angleStep + Math.PI * 2) % (Math.PI * 2);
         }
         //console.log(this._vue.distances)
@@ -181,10 +177,10 @@ export class Grille {
     dessineRayons() {
         this._ctx.strokeStyle = "#0F0";
         this._ctx.beginPath();
-        for (let i = 0; i < this.rayons.length; i++) {
-            const r = this.rayons[i];
-            this._ctx.moveTo(r.x1, r.y1);
-            this._ctx.lineTo(r.x2, r.y2);
+        for (let i = 0; i < this._rays.data.length; i++) {
+            const r = this._rays.data[i];
+            this._ctx.moveTo(r.orig[0], r.orig[1]);
+            this._ctx.lineTo(r.x, r.y);
         }
         this._ctx.closePath();
         this._ctx.stroke();

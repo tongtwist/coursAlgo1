@@ -1,10 +1,8 @@
 import {
-//	IGrilleConfig,
 	IGrille,
 	Grille
 } from "./Grille.js"
 import {
-//	IPointConfig,
 	IPoint,
 	Point
 } from "./Point.js"
@@ -12,6 +10,18 @@ import {
 	IView3D,
 	View3D
 } from "./View3D.js"
+import {
+	IKeyboardController,
+	KeyboardController
+} from "./KeyboardController.js"
+import {
+	IRays,
+	Rays
+} from "./Rays.js"
+import {
+	IRayCaster,
+	RayCaster
+} from "./RayCaster.js"
 
 
 function init () {
@@ -20,13 +30,11 @@ function init () {
 	const viewCanvas: HTMLCanvasElement
 		= document.getElementById("view") as HTMLCanvasElement
 
-	const blockStyles = { 1: "rgba(238,68,0,1.0)" }
-	const view3D: IView3D = new View3D({
-		canvas: viewCanvas,
-		blockStyles,
-		couleurPlafond: "#223344",
-		couleurSol: "#448844"
+	const rays: IRays = new Rays({
+		angleWidth: Math.PI * .5,
+		raysNumber: 50
 	})
+	const blockStyles = { 1: "rgba(238,68,0,1.0)" }
 	const grille: IGrille = new Grille({
 		canvas: mapCanvas,
 		data: [
@@ -44,9 +52,7 @@ function init () {
 		blockStyles,
 		couleurFond: "#EEE",
 		couleurGrille: "#333",
-		nbRayons: viewCanvas.width,
-		angleRayons: Math.PI * .5,
-		vue: view3D
+		rays
 	})
 	const point: IPoint = new Point({
 		canvas: mapCanvas,
@@ -55,25 +61,33 @@ function init () {
 		angle: 0,
 		couleur: "#20E"
 	})
+	
+	const rayCaster: IRayCaster = new RayCaster({ grille, rays })
+	const view3D: IView3D = new View3D({
+		canvas: viewCanvas,
+		blockStyles,
+		couleurPlafond: "#223344",
+		couleurSol: "#448844",
+		rays
+	})
 
-	window.addEventListener("keyup", (evt: KeyboardEvent) => {
-		switch (evt.key) {
-			case "ArrowUp": point.deltaAvance = 0;break;
-			case "ArrowDown": point.deltaRecule = 0;break;
-			case "ArrowLeft": point.deltaPivotGauche = 0;break;
-			case "ArrowRight": point.deltaPivotDroite = 0;break;
-		}
-		//evt.preventDefault()
+	const keyboardController: IKeyboardController = new KeyboardController({
+		target: window,
+		keydownHandlers: {
+			"ArrowUp": () => point.deltaAvance = 1,
+			"ArrowDown": () => point.deltaRecule = 1,
+			"ArrowLeft": () => point.deltaPivotGauche = 1,
+			"ArrowRight": () => point.deltaPivotDroite = 1
+		},
+		keyupHandlers: {
+			"ArrowUp": () => point.deltaAvance = 0,
+			"ArrowDown": () => point.deltaRecule = 0,
+			"ArrowLeft": () => point.deltaPivotGauche = 0,
+			"ArrowRight": () => point.deltaPivotDroite = 0
+		},
+		preventDefaults: false
 	})
-	window.addEventListener("keydown", (evt: KeyboardEvent) => {
-		switch (evt.key) {
-			case "ArrowUp": point.deltaAvance = 1;break;
-			case "ArrowDown": point.deltaRecule = 1;break;
-			case "ArrowLeft": point.deltaPivotGauche = 1;break;
-			case "ArrowRight": point.deltaPivotDroite = 1;break;
-		}
-		//evt.preventDefault()
-	})
+	keyboardController.activate()
 
 	const delay: number = Math.floor(1000 / 30)
 	let lastTime: number = Date.now()
@@ -81,15 +95,19 @@ function init () {
 		const newTime: number = Date.now()
 		const delay: number = newTime - lastTime
 		point.deplace(delay)
-		grille.lanceRayons(
+		rayCaster.castAll(
 			point.x,
 			point.y,
 			point.angle
 		)
+		/*grille.lanceRayons(
+			point.x,
+			point.y,
+			point.angle
+		)*/
 		grille.dessine()
 		point.dessine()
 		view3D.dessine()
-		
 		//console.log(delay)
 		lastTime = newTime
 	}

@@ -1,8 +1,12 @@
+import type { IRays } from "./Rays"
+
+
 export interface IView3DConfig {
 	readonly canvas: HTMLCanvasElement
 	readonly couleurSol: string
 	readonly couleurPlafond: string
 	readonly blockStyles: { [ blockValue: number]: string }
+	readonly rays: IRays
 }
 
 export interface IView3D {
@@ -19,6 +23,7 @@ export interface IView3D {
 export class View3D implements IView3D {
 	private _canvas: HTMLCanvasElement
 	private _ctx: CanvasRenderingContext2D
+	private _rays: IRays
 	private readonly _nbColonnes: number
 	distances: Array<number>
 	hitWhat: Array<number>
@@ -28,7 +33,8 @@ export class View3D implements IView3D {
 
 	constructor (cfg: IView3DConfig) {
 		this._canvas = cfg.canvas
-		this._ctx = cfg.canvas.getContext("2d") as CanvasRenderingContext2D
+		this._ctx = cfg.canvas.getContext("2d", { alpha: false }) as CanvasRenderingContext2D
+		this._rays = cfg.rays
 		this._nbColonnes = cfg.canvas.width
 		this.distances = Array(this._nbColonnes)
 		this.hitWhat = Array(this._nbColonnes)
@@ -52,28 +58,40 @@ export class View3D implements IView3D {
 
 	dessineMurs () {
 		let lastCouleur: string = ""
-		for (let i = 0; i < this.distances.length; i++) {
+		let i = 0
+		for (const ray of this._rays.data) {
+			const block: number = ray.blockType
+			const couleur: string = this._blockStyles[block]
+			if (couleur !== lastCouleur) {
+				if (lastCouleur !== "") {
+					this._ctx.fill()
+				}
+				lastCouleur = couleur
+				this._ctx.fillStyle = couleur
+			}
+			const dist: number = ray.dist
+			const hauteurLigne: number = Math.min(this._canvas.height, 50 * this._canvas.height / dist)
+			const offset: number = (this._canvas.height - hauteurLigne) / 2
+			this._ctx.fillRect(i, offset, 1, hauteurLigne)
+			i++
+		}
+		/*for (let i = 0; i < this.distances.length; i++) {
 			const block: number = this.hitWhat[i]
 			const couleur: string = this._blockStyles[block]
 			if (couleur !== lastCouleur) {
 				if (lastCouleur !== "") {
-					this._ctx.closePath()
-					this._ctx.stroke()
+					this._ctx.fill()
 				}
 				lastCouleur = couleur
-				this._ctx.strokeStyle = couleur
-				this._ctx.globalAlpha = 1.0
-				this._ctx.beginPath()
+				this._ctx.fillStyle = couleur
 			}
 			const dist: number = this.distances[i]
 			const hauteurLigne: number = Math.min(this._canvas.height, 50 * this._canvas.height / dist)
 			const offset: number = (this._canvas.height - hauteurLigne) / 2
-			this._ctx.moveTo(i, offset)
-			this._ctx.lineTo(i, offset + hauteurLigne)
-		}
+			this._ctx.fillRect(i, offset, 1, hauteurLigne)
+		}*/
 		if (lastCouleur !== "") {
-			this._ctx.closePath()
-			this._ctx.stroke()
+			this._ctx.fill()
 		}
 	}
 
