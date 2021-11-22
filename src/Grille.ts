@@ -24,7 +24,6 @@ export interface IGrille {
 	dessineBlocks (): void
 	dessineRayons (): void
 	dessine (): void
-	lanceRayons (x: number, y: number, angle: number): void
 }
 
 export class Grille implements IGrille {
@@ -81,122 +80,6 @@ export class Grille implements IGrille {
 	get blockWidth () { return this._blockWidth }
 	set blockWidth (_value: number) {}
 
-	_lanceRayonH (
-		x: number,
-		y: number,
-		centerAngle: number,
-		a: number,
-		nIntersection: number
-	): void {
-		let hit: boolean = false
-		let mx: number = 0
-		let my: number = 0
-		let rx: number = x
-		let ry: number = y
-		let xo: number = 0
-		let yo: number = 0
-		const tan: number = Math.tan(a)
-		const atan: number = -1 / tan
-		if (a > Math.PI) {
-			ry = Math.floor(y / this._blockHeight) * this._blockHeight - 0.0001
-			rx = (y - ry) * atan + x
-			yo = -this._blockHeight
-			xo = -yo * atan
-		}
-		if (a < Math.PI) {
-			ry = Math.floor(y / this._blockHeight) * this._blockHeight + this._blockHeight
-			rx = (y - ry) * atan + x
-			yo = this._blockHeight
-			xo = -yo * atan
-		}
-		while (my >= 0 && my < this._data.length && !hit) {
-			mx = Math.floor(rx / this._blockWidth)
-			my = Math.floor(ry / this._blockHeight)
-			hit = my >= 0 && my < this._data.length && mx >= 0 && mx < this._data[0].length && this._data[my][mx] > 0
-			if (!hit) {
-				rx += xo
-				ry += yo
-			}
-		}
-		const hhit: boolean = hit
-		const hrx: number = rx
-		const hry: number = ry
-		const hmx: number = mx
-		const hmy: number = my
-		const hDist: number = Math.sqrt((hrx - x) * (hrx - x) + (hry - y) * (hry - y))
-		hit = false
-		mx = 0
-		my = 0
-		rx = x
-		ry = y
-		xo = 0
-		yo = 0
-		const ntan: number = -tan
-		const pi2: number = Math.PI / 2
-		const pi3: number = 3 * pi2
-		if (a > pi2 && a < pi3) {
-			rx = Math.floor(x / this._blockWidth) * this._blockWidth - 0.0001
-			ry = (x - rx) * ntan + y
-			xo = -this._blockWidth
-			yo = -xo * ntan
-		}
-		if (a < pi2 || a > pi3) {
-			rx = Math.floor(x / this._blockWidth) * this._blockWidth + this._blockWidth
-			ry = (x - rx) * ntan + y
-			xo = this._blockWidth
-			yo = -xo * ntan
-		}
-		while (my >= 0 && my < this._data.length && !hit) {
-			mx = Math.floor(rx / this._blockWidth)
-			my = Math.floor(ry / this._blockHeight)
-			hit = my >= 0 && my < this._data.length && mx >= 0 && mx < this._data[0].length && this._data[my][mx] > 0
-			if (!hit) {
-				rx += xo
-				ry += yo
-			}
-		}
-		const vDist: number = Math.sqrt((rx - x) * (rx - x) + (ry - y) * (ry - y))
-		if (vDist < hDist) {
-			this._rays.data[nIntersection].x = rx
-			this._rays.data[nIntersection].y = ry
-			this._rays.data[nIntersection].colBlock = mx
-			this._rays.data[nIntersection].ligBlock = my
-			this._rays.data[nIntersection].dist = vDist
-		} else {
-			this._rays.data[nIntersection].x = hrx
-			this._rays.data[nIntersection].y = hry
-			this._rays.data[nIntersection].colBlock = hmx
-			this._rays.data[nIntersection].ligBlock = hmy
-			this._rays.data[nIntersection].dist = hDist
-		}
-		let ca: number = centerAngle - a
-		if (ca < 0) ca += Math.PI * 2
-		if (ca > Math.PI * 2) ca -= Math.PI * 2
-		//console.log(ca)
-		this._rays.data[nIntersection].dist *= Math.cos(ca)
-	}
-	
-	lanceRayons (
-		x: number,
-		y: number,
-		angle: number
-	): void {
-		const angleStep: number = this._rays.angleWidth / this._rays.raysNumber
-		let a: number = (angle - (this._rays.angleWidth / 2) + Math.PI * 2) % (Math.PI * 2)
-		for (let i = 0; i < this.rayons.length; i++) {
-			this._lanceRayonH(x, y, angle, a, i)
-			this.rayons[i].x1 = x
-			this.rayons[i].y1 = y
-			this.rayons[i].x2 = this._rays.data[i].x
-			this.rayons[i].y2 = this._rays.data[i].y
-			//this._vue.distances[i] = this.intersections[i].dist
-			//this._vue.hitWhat[i]
-				= this._data[this._rays.data[i].ligBlock][this._rays.data[i].colBlock]
-			a = (a + angleStep + Math.PI * 2) % (Math.PI * 2)
-		}
-		//console.log(this._vue.distances)
-	}
-
 	dessineGrille () {
 		this._ctx.fillStyle = this.couleurFond
 		this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height)
@@ -234,15 +117,14 @@ export class Grille implements IGrille {
 	}
 
 	dessineRayons() {
-		this._ctx.strokeStyle = "#0F0"
-		this._ctx.beginPath()
-		for (let i = 0; i < this._rays.data.length; i++) {
-			const r = this._rays.data[i]
+		for (const r of this._rays.data) {
+			this._ctx.strokeStyle = `#00${(255-Math.round(r.dist * 255 / 500)).toString(16)}00`
+			this._ctx.beginPath()
 			this._ctx.moveTo(r.orig[0], r.orig[1])
 			this._ctx.lineTo(r.x, r.y)
+			this._ctx.closePath()
+			this._ctx.stroke()
 		}
-		this._ctx.closePath()
-		this._ctx.stroke()
 	}
 
 	dessine () {

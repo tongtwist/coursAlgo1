@@ -23,6 +23,7 @@ export interface IView3D {
 export class View3D implements IView3D {
 	private _canvas: HTMLCanvasElement
 	private _ctx: CanvasRenderingContext2D
+	private _midHeight: number
 	private _rays: IRays
 	private readonly _nbColonnes: number
 	distances: Array<number>
@@ -34,6 +35,7 @@ export class View3D implements IView3D {
 	constructor (cfg: IView3DConfig) {
 		this._canvas = cfg.canvas
 		this._ctx = cfg.canvas.getContext("2d", { alpha: false }) as CanvasRenderingContext2D
+		this._midHeight = Math.round(this._canvas.height / 2) | 0
 		this._rays = cfg.rays
 		this._nbColonnes = cfg.canvas.width
 		this.distances = Array(this._nbColonnes)
@@ -44,24 +46,29 @@ export class View3D implements IView3D {
 	}
 
 	dessineSol () {
-		const h2: number = Math.round(this._canvas.height / 2)
+		const top: number = (this._midHeight + 1) | 0
 		this._ctx.fillStyle = this.couleurSol
-		this._ctx.fillRect(0, h2, this._canvas.width, h2)
+		this._ctx.fillRect(0, top, this._canvas.width, this._canvas.height - top)
 		this._ctx.fill()
 	}
 
 	dessinePlafond () {
 		this._ctx.fillStyle = this.couleurPlafond
-		this._ctx.fillRect(0, 0, this._canvas.width, Math.round(this._canvas.height / 2))
+		this._ctx.fillRect(0, 0, this._canvas.width, this._midHeight)
 		this._ctx.fill()
 	}
 
 	dessineMurs () {
 		let lastCouleur: string = ""
-		let i = 0
+		let left = 0
+		const largeurColonne: number = Math.round(this._canvas.width / this._rays.data.length) | 0
+		const txHeight: number = (50 * this._canvas.height) | 0
 		for (const ray of this._rays.data) {
 			const block: number = ray.blockType
-			const couleur: string = this._blockStyles[block]
+			const couleur: string
+				= ray.vhit
+				? this._blockStyles[block]
+				: "#882211"
 			if (couleur !== lastCouleur) {
 				if (lastCouleur !== "") {
 					this._ctx.fill()
@@ -69,27 +76,11 @@ export class View3D implements IView3D {
 				lastCouleur = couleur
 				this._ctx.fillStyle = couleur
 			}
-			const dist: number = ray.dist
-			const hauteurLigne: number = Math.min(this._canvas.height, 50 * this._canvas.height / dist)
-			const offset: number = (this._canvas.height - hauteurLigne) / 2
-			this._ctx.fillRect(i, offset, 1, hauteurLigne)
-			i++
+			const hauteurLigne: number = Math.min(this._canvas.height, Math.round(txHeight / ray.dist) | 0) | 0
+			const offset: number = Math.round((this._canvas.height - hauteurLigne) / 2) | 0
+			this._ctx.fillRect(left, offset, largeurColonne, hauteurLigne)
+			left += largeurColonne
 		}
-		/*for (let i = 0; i < this.distances.length; i++) {
-			const block: number = this.hitWhat[i]
-			const couleur: string = this._blockStyles[block]
-			if (couleur !== lastCouleur) {
-				if (lastCouleur !== "") {
-					this._ctx.fill()
-				}
-				lastCouleur = couleur
-				this._ctx.fillStyle = couleur
-			}
-			const dist: number = this.distances[i]
-			const hauteurLigne: number = Math.min(this._canvas.height, 50 * this._canvas.height / dist)
-			const offset: number = (this._canvas.height - hauteurLigne) / 2
-			this._ctx.fillRect(i, offset, 1, hauteurLigne)
-		}*/
 		if (lastCouleur !== "") {
 			this._ctx.fill()
 		}

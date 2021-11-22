@@ -9,9 +9,9 @@ function init() {
     const viewCanvas = document.getElementById("view");
     const rays = new Rays({
         angleWidth: Math.PI * .5,
-        raysNumber: 50
+        raysNumber: viewCanvas.width
     });
-    const blockStyles = { 1: "rgba(238,68,0,1.0)" };
+    const blockStyles = { 1: "#992200" };
     const grille = new Grille({
         canvas: mapCanvas,
         data: [
@@ -36,14 +36,15 @@ function init() {
         x: 93,
         y: 417,
         angle: 0,
-        couleur: "#20E"
+        couleur: "#20E",
+        rays
     });
     const rayCaster = new RayCaster({ grille, rays });
     const view3D = new View3D({
         canvas: viewCanvas,
         blockStyles,
-        couleurPlafond: "#223344",
-        couleurSol: "#448844",
+        couleurPlafond: "#223355",
+        couleurSol: "#446644",
         rays
     });
     const keyboardController = new KeyboardController({
@@ -69,7 +70,7 @@ function init() {
         const newTime = Date.now();
         const delay = newTime - lastTime;
         point.deplace(delay);
-        rayCaster.castAll(point.x, point.y, point.angle);
+        rayCaster.castAll(point.x, point.y);
         /*grille.lanceRayons(
             point.x,
             point.y,

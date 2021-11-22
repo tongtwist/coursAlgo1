@@ -1,9 +1,13 @@
+import { IRays, Rays } from "./Rays.js"
+
+
 export interface IPointConfig {
 	readonly canvas: HTMLCanvasElement
 	readonly x: number
 	readonly y: number
 	readonly angle: number
 	readonly couleur: string
+	readonly rays: IRays
 }
 
 export interface IPoint {
@@ -31,6 +35,7 @@ export class Point implements IPoint {
 	deltaPivotDroite: number
 	deltaAvance: number
 	deltaRecule: number
+	private _rays: IRays
 
 	constructor (opts: IPointConfig) {
 		this._ctx = opts.canvas.getContext("2d", { alpha: false }) as CanvasRenderingContext2D
@@ -42,6 +47,7 @@ export class Point implements IPoint {
 		this.deltaPivotDroite = 0
 		this.deltaAvance = 0
 		this.deltaRecule = 0
+		this._rays = opts.rays
 	}
 
 	get x () { return this._x }
@@ -55,17 +61,24 @@ export class Point implements IPoint {
 
 	calculeDeplacement (deltaT: number): [ number, number ] {
 		const normeV: number
-			= Point._vTranslation * deltaT * 0.001 * (this.deltaAvance - this.deltaRecule)
+			= Point._vTranslation * deltaT * 0.001
+			* (this.deltaAvance - this.deltaRecule)
 		const x: number = Math.cos(this._angle) * normeV
 		const y: number = Math.sin(this._angle) * normeV
 		return [x, y]
 	}
 
 	deplace (deltaT: number) {
-		const deltaAngle: number
-			= (this.deltaPivotGauche - this.deltaPivotDroite) * Point._vPivot * deltaT * -0.001
-		this._angle = (this._angle + deltaAngle + Math.PI * 2) % (Math.PI * 2)
-		const v: [ number, number ] = this.calculeDeplacement(deltaT)
+		const totalPivot: number
+			= this.deltaPivotGauche - this.deltaPivotDroite
+		if (totalPivot !== 0) {
+			const deltaAngle: number
+				= totalPivot * Point._vPivot * deltaT * -0.001
+			this._angle = Rays.fixAngle(this._angle + deltaAngle)
+			this._rays.centerAngle = this._angle
+		}
+		const v: [ number, number ]
+			= this.calculeDeplacement(deltaT)
 		this._x += v[0]
 		this._y += v[1]
 	}

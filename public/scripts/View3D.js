@@ -2,6 +2,7 @@ export class View3D {
     constructor(cfg) {
         this._canvas = cfg.canvas;
         this._ctx = cfg.canvas.getContext("2d", { alpha: false });
+        this._midHeight = Math.round(this._canvas.height / 2) | 0;
         this._rays = cfg.rays;
         this._nbColonnes = cfg.canvas.width;
         this.distances = Array(this._nbColonnes);
@@ -11,22 +12,26 @@ export class View3D {
         this._blockStyles = cfg.blockStyles;
     }
     dessineSol() {
-        const h2 = Math.round(this._canvas.height / 2);
+        const top = (this._midHeight + 1) | 0;
         this._ctx.fillStyle = this.couleurSol;
-        this._ctx.fillRect(0, h2, this._canvas.width, h2);
+        this._ctx.fillRect(0, top, this._canvas.width, this._canvas.height - top);
         this._ctx.fill();
     }
     dessinePlafond() {
         this._ctx.fillStyle = this.couleurPlafond;
-        this._ctx.fillRect(0, 0, this._canvas.width, Math.round(this._canvas.height / 2));
+        this._ctx.fillRect(0, 0, this._canvas.width, this._midHeight);
         this._ctx.fill();
     }
     dessineMurs() {
         let lastCouleur = "";
-        let i = 0;
+        let left = 0;
+        const largeurColonne = Math.round(this._canvas.width / this._rays.data.length) | 0;
+        const txHeight = (50 * this._canvas.height) | 0;
         for (const ray of this._rays.data) {
             const block = ray.blockType;
-            const couleur = this._blockStyles[block];
+            const couleur = ray.vhit
+                ? this._blockStyles[block]
+                : "#882211";
             if (couleur !== lastCouleur) {
                 if (lastCouleur !== "") {
                     this._ctx.fill();
@@ -34,27 +39,11 @@ export class View3D {
                 lastCouleur = couleur;
                 this._ctx.fillStyle = couleur;
             }
-            const dist = ray.dist;
-            const hauteurLigne = Math.min(this._canvas.height, 50 * this._canvas.height / dist);
-            const offset = (this._canvas.height - hauteurLigne) / 2;
-            this._ctx.fillRect(i, offset, 1, hauteurLigne);
-            i++;
+            const hauteurLigne = Math.min(this._canvas.height, Math.round(txHeight / ray.dist) | 0) | 0;
+            const offset = Math.round((this._canvas.height - hauteurLigne) / 2) | 0;
+            this._ctx.fillRect(left, offset, largeurColonne, hauteurLigne);
+            left += largeurColonne;
         }
-        /*for (let i = 0; i < this.distances.length; i++) {
-            const block: number = this.hitWhat[i]
-            const couleur: string = this._blockStyles[block]
-            if (couleur !== lastCouleur) {
-                if (lastCouleur !== "") {
-                    this._ctx.fill()
-                }
-                lastCouleur = couleur
-                this._ctx.fillStyle = couleur
-            }
-            const dist: number = this.distances[i]
-            const hauteurLigne: number = Math.min(this._canvas.height, 50 * this._canvas.height / dist)
-            const offset: number = (this._canvas.height - hauteurLigne) / 2
-            this._ctx.fillRect(i, offset, 1, hauteurLigne)
-        }*/
         if (lastCouleur !== "") {
             this._ctx.fill();
         }
