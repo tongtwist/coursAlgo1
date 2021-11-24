@@ -68,7 +68,7 @@ export class Rays implements IRays {
 	}
 
 	private _fixAngleWidth (valueToFix: number): number {
-		return Math.max(Math.PI / 8, Math.abs(valueToFix))
+		return Math.min(Math.PI * .95, Math.max(Math.PI / 8, Math.abs(valueToFix)))
 	}
 	
 	private _fixRaysNumber (valueToFix: number): number {
@@ -77,11 +77,13 @@ export class Rays implements IRays {
 
 	private _computeEmptyRays (): Array<IRay> {
 		const ret: Array<IRay> = Array<IRay>(this._raysNumber)
-		let da: number = this._angleWidth / 2
-		const angleStep: number = this._angleWidth / this._raysNumber
+		let tanAngle: number = Math.tan(this._angleWidth / 2)
+		const fullTanAngleViewWidth: number = tanAngle * 2
+		const tanStep: number = fullTanAngleViewWidth / this._raysNumber
 		for (let i = 0; i < this._raysNumber; i++) {
+			const da: number = Math.atan(tanAngle)
 			const a: number = Rays.fixAngle(da)
-			const tan: number = Math.tan(a)
+			const tan: number = tanAngle
 			ret[i] = {
 				da,
 				a,
@@ -96,7 +98,7 @@ export class Rays implements IRays {
 				ligBlock: 0,
 				vhit: false
 			}
-			da -= angleStep
+			tanAngle -= tanStep
 		}
 		return ret.reverse()
 	}

@@ -23,14 +23,6 @@ Il est demandé à ce moteur de simplement savoir afficher un sol, un plafond et
 
 Pour ce faire, au préalable, nous développerons aussi une vue 2D de la carte dans lequel notre point de vue 3D évoluera. Dans cette vue 2D, nous pourrons ajouter et retirer des murs.
 
-
-## TODO:
-* Fixer un léger bug visuel. Il y a un léger effet fisheye visible quand on s'approche de face d'un mur tout droit. Sur les côtés gauche et droit de la vue 3D, les murs semblent se rapprocher un peu plus vite qu'au centre de l'image. L'origine probable du problème vient du pré-calcul des angles des rayons à lancer.
-* Commenter le code
-* Réécrire la fonction de cast d'un rayon qui est trop longue
-* Implémenter la détection de colision dans les murs pour éviter de passer au travers
-* Faire la boucle de rendu avec un `requestAnimationFrame()` plutot qu'avec un simple `setInterval()` pour pouvoir faire le rendu dans un smartphone sans en ruiner la batterie
-
 ## TODO (future release):
 * Implémenter le texturing des murs
 * Implémenter le texturing des sols et plafonds

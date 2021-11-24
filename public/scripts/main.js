@@ -71,15 +71,9 @@ function init() {
         const delay = newTime - lastTime;
         point.deplace(delay);
         rayCaster.castAll(point.x, point.y);
-        /*grille.lanceRayons(
-            point.x,
-            point.y,
-            point.angle
-        )*/
         grille.dessine();
         point.dessine();
         view3D.dessine();
-        //console.log(delay)
         lastTime = newTime;
     }
     setInterval(render, delay);

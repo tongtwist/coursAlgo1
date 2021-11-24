@@ -29,18 +29,20 @@ export class Rays {
         }
     }
     _fixAngleWidth(valueToFix) {
-        return Math.max(Math.PI / 8, Math.abs(valueToFix));
+        return Math.min(Math.PI * .95, Math.max(Math.PI / 8, Math.abs(valueToFix)));
     }
     _fixRaysNumber(valueToFix) {
         return Math.max(1, Math.round(valueToFix));
     }
     _computeEmptyRays() {
         const ret = Array(this._raysNumber);
-        let da = this._angleWidth / 2;
-        const angleStep = this._angleWidth / this._raysNumber;
+        let tanAngle = Math.tan(this._angleWidth / 2);
+        const fullTanAngleViewWidth = tanAngle * 2;
+        const tanStep = fullTanAngleViewWidth / this._raysNumber;
         for (let i = 0; i < this._raysNumber; i++) {
+            const da = Math.atan(tanAngle);
             const a = Rays.fixAngle(da);
-            const tan = Math.tan(a);
+            const tan = tanAngle;
             ret[i] = {
                 da,
                 a,
@@ -55,7 +57,7 @@ export class Rays {
                 ligBlock: 0,
                 vhit: false
             };
-            da -= angleStep;
+            tanAngle -= tanStep;
         }
         return ret.reverse();
     }
