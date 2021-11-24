@@ -21,7 +21,7 @@ Programmer "from scratch", sans librairies tierces ni aide d'aucune sorte, un mo
 
 Il est demandé à ce moteur de simplement savoir afficher un sol, un plafond et des murs unis, sans textures.
 
-Pour ce faire, nous développerons aussi, et au préalable un outil d'édition de la carte dans lequel
+Pour ce faire, au préalable, nous développerons aussi une vue 2D de la carte dans lequel notre point de vue 3D évoluera. Dans cette vue 2D, nous pourrons ajouter et retirer des murs.
 
 
 ## TODO:
