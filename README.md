@@ -1,6 +1,6 @@
 # Cours Algo du 16/11/2021 - Projet final: Raycaster
 
-![screen-gif](./capture.gif)
+![screen-gif](./media/capture.gif)
 
 
 ## Parenthèse retro

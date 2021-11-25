@@ -24,12 +24,17 @@ import {
 } from "./RayCaster.js"
 
 
-function init () {
-	const mapCanvas: HTMLCanvasElement
-		= document.getElementById("map") as HTMLCanvasElement
-	const viewCanvas: HTMLCanvasElement
-		= document.getElementById("view") as HTMLCanvasElement
-
+/**
+ * Function init.
+ * This function setup the development application with some default parameters.
+ *
+ * @param mapCanvas { HTMLCanvasElement } HTML Canvas in which to render the world's map grid and to put or remove walls
+ * @param viewCanvas { HTMLCanvasElement } HTML Canvas in which to render the "3D" view
+ */
+function init (
+	mapCanvas: HTMLCanvasElement,
+	viewCanvas: HTMLCanvasElement
+): void {
 	const rays: IRays = new Rays({
 		angleWidth: Math.PI * .5,
 		raysNumber: viewCanvas.width
@@ -105,4 +110,7 @@ function init () {
 	setInterval(render, delay)
 }
 
-init();
+init(
+	document.getElementById("map") as HTMLCanvasElement,
+	document.getElementById("view") as HTMLCanvasElement
+)

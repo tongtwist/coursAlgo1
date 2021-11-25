@@ -4,9 +4,14 @@ import { View3D } from "./View3D.js";
 import { KeyboardController } from "./KeyboardController.js";
 import { Rays } from "./Rays.js";
 import { RayCaster } from "./RayCaster.js";
-function init() {
-    const mapCanvas = document.getElementById("map");
-    const viewCanvas = document.getElementById("view");
+/**
+ * Function init.
+ * This function setup the development application with some default parameters.
+ *
+ * @param mapCanvas { HTMLCanvasElement } HTML Canvas in which to render the world's map grid and to put or remove walls
+ * @param viewCanvas { HTMLCanvasElement } HTML Canvas in which to render the "3D" view
+ */
+function init(mapCanvas, viewCanvas) {
     const rays = new Rays({
         angleWidth: Math.PI * .5,
         raysNumber: viewCanvas.width
@@ -78,5 +83,5 @@ function init() {
     }
     setInterval(render, delay);
 }
-init();
+init(document.getElementById("map"), document.getElementById("view"));
 //# sourceMappingURL=main.js.map
