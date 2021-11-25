@@ -11,5 +11,17 @@
 	},
 	"include": [
 		"src/**/*"
-	]
+	],
+	"typedocOptions": {
+		"entryPoints": [
+			"./src"
+		],
+		"exclude": [
+			"./test/**/*"
+		],
+		"out": "./doc",
+		"pretty": true,
+		"entryPointStrategy": "expand",
+		"media": "./media"
+	}
 }
