@@ -1,4 +1,4 @@
-# Cours Algo du 16/11/2021 - Projet final: Raycaster
+# Cours Algo du 18/11/2021 - Projet final: Raycaster
 
 ![screen-gif](./capture.gif)
 
