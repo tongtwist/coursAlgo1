@@ -48,6 +48,3 @@ clear && npm run start:dev
 ```
 
 Par défaut le serveur web écoute sur http://127.0.0.1:3000/
-
-## Documentation
-[Here](/doc/index.html) is the actual documentation.
