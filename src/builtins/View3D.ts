@@ -77,3 +77,5 @@ export class View3D implements IView3D {
 		this.dessineMurs()
 	}
 }
+
+export default View3D

@@ -9,3 +9,4 @@ export declare class RayCaster implements IRayCaster {
     castAll(x: number, y: number): void;
     cast(x: number, y: number, ray: IRay): void;
 }
+export default RayCaster;

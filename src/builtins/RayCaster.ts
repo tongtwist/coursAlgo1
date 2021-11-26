@@ -7,8 +7,7 @@ import type {
 	IRayCasterConfig,
 	IRayCaster
 } from "../RayCaster"
-import { Rays } from "./Rays"
-
+import { Rays } from "./Rays.js"
 
 
 export class RayCaster implements IRayCaster {
@@ -119,3 +118,5 @@ export class RayCaster implements IRayCaster {
 	}
 
 }
+
+export default RayCaster

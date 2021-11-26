@@ -4,7 +4,7 @@ import type {
 	IPoint
 } from "../Point"
 
-import { Rays } from "./Rays"
+import { Rays } from "./Rays.js"
 
 
 export class Point implements IPoint {

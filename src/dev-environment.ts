@@ -6,14 +6,12 @@ import type {
 	IKeyboardController,
 	IRayCaster
 } from "."
-import {
-	Grille,
-	Point,
-	View3D,
-	KeyboardController,
-	Rays,
-	RayCaster
-} from "./builtins"
+import Grille from "./builtins/Grille.js"
+import Point from "./builtins/Point.js"
+import View3D from "./builtins/View3D.js"
+import KeyboardController from "./builtins/KeyboardController.js"
+import Rays from "./builtins/Rays.js"
+import RayCaster from "./builtins/RayCaster.js"
 
 
 /**

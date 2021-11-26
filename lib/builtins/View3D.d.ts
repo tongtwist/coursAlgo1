@@ -16,3 +16,4 @@ export declare class View3D implements IView3D {
     dessineMurs(): void;
     dessine(): void;
 }
+export default View3D;
