@@ -33,18 +33,3 @@ Pour ce faire, au préalable, nous développerons aussi une vue 2D de la carte d
 
 ## Vision
 Faire un clone du jeu Among Us, affiché en mode Wolfeinstein 3D
-
-## Lancement
-De temps en temps pour mettre a jour les deps et la première fois après le clonage du dépot:
-
-```
-npm install
-```
-
-Pour lancer le serveur:
-
-```
-clear && npm run start:dev
-```
-
-Par défaut le serveur web écoute sur http://127.0.0.1:3000/
