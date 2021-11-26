@@ -1,7 +1,0 @@
-export * from "./Grille";
-export * from "./KeyboardController";
-export * from "./Point";
-export * from "./RayCaster";
-export * from "./Rays";
-export * from "./View3D";
-//# sourceMappingURL=index.js.map
