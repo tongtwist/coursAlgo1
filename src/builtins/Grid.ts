@@ -1,57 +1,57 @@
 import type { IRays} from "../Rays"
 import type {
-	IGrilleConfig,
-	IGrille
-} from "../Grille"
+	IGridConfig,
+	IGrid
+} from "../Grid"
 
 
-export class Grille implements IGrille {
+export class Grid implements IGrid {
 	private readonly _canvas: HTMLCanvasElement
 	private readonly _ctx: CanvasRenderingContext2D
 	private _data: Array<Array<number>>
-	private _nbColonnes: number
-	private _nbLignes: number
+	private _columnsNumber: number
+	private _linesNumber: number
 	blockStyles: { [ blockValue: number ]: string }
-	couleurFond: string
-	couleurGrille: string
+	bgColor: string
+	color: string
 	private _blockHeight: number
 	private _blockWidth: number
-	rayons: Array<{x1: number, y1: number, x2: number, y2: number}>
+	segments: Array<{x1: number, y1: number, x2: number, y2: number}>
 	private _rays: IRays
 
-	constructor (opts: IGrilleConfig) {
+	constructor (opts: IGridConfig) {
 		this._canvas = opts.canvas
 		this._ctx = opts.canvas.getContext("2d", { alpha: false }) as CanvasRenderingContext2D
 		this._data = opts.data
-		this._nbColonnes = opts.data[0].length
-		this._nbLignes = opts.data.length
+		this._columnsNumber = opts.data[0].length
+		this._linesNumber = opts.data.length
 		this.blockStyles = opts.blockStyles
-		this.couleurFond = opts.couleurFond
-		this.couleurGrille = opts.couleurGrille
+		this.bgColor = opts.bgColor
+		this.color = opts.color
 		this._blockHeight = Math.round(this._canvas.height / this.data.length)
 		this._blockWidth = Math.round(this._canvas.width / this.data[0].length)
 		this._canvas.addEventListener("mouseup", (evt: MouseEvent) => this._coordonneesSourisDansGrille(evt))
-		this.rayons = Array(opts.rays.raysNumber)
+		this.segments = Array(opts.rays.raysNumber)
 		this._rays = opts.rays
 		for (let i = 0; i < opts.rays.raysNumber; i++) {
-			this.rayons[i] = { x1: 0, y1: 0, x2: 0, y2: 0 }
+			this.segments[i] = { x1: 0, y1: 0, x2: 0, y2: 0 }
 		}
 	}
 
 	get data () { return this._data }
 	set data (value: Array<Array<number>>) {
 		this._data = value
-		this._nbColonnes = value[0].length
-		this._nbLignes = value.length
+		this._columnsNumber = value[0].length
+		this._linesNumber = value.length
 		this._blockHeight = Math.round(this._canvas.height / value.length)
 		this._blockWidth = Math.round(this._canvas.width / value.length)
 	}
 	
-	get nbColonnes () { return this._nbColonnes }
-	set nbColonnes (_value: number) {}
+	get columnsNumber () { return this._columnsNumber }
+	set columnsNumber (_value: number) {}
 
-	get nbLignes () { return this._nbLignes}
-	set nbLignes (_value: number) {}
+	get linesNumber () { return this._linesNumber }
+	set linesNumber (_value: number) {}
 	
 	get blockHeight () { return this._blockHeight }
 	set blockHeight (_value: number) {}
@@ -59,10 +59,10 @@ export class Grille implements IGrille {
 	get blockWidth () { return this._blockWidth }
 	set blockWidth (_value: number) {}
 
-	dessineGrille () {
-		this._ctx.fillStyle = this.couleurFond
+	drawGrid () {
+		this._ctx.fillStyle = this.bgColor
 		this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height)
-		this._ctx.strokeStyle = this.couleurGrille
+		this._ctx.strokeStyle = this.color
 		this._ctx.beginPath()
 		for (let i = 1; i < this.data.length; i++) {
 			const y = i * this.blockHeight
@@ -78,7 +78,7 @@ export class Grille implements IGrille {
 		this._ctx.stroke()
 	}
 
-	dessineBlocks () {
+	drawBlocks () {
 		let top = 1
 		const heightBlock = this._blockHeight - 2
 		const widthBlock = this._blockWidth - 2
@@ -95,7 +95,7 @@ export class Grille implements IGrille {
 		})
 	}
 
-	dessineRayons() {
+	drawSegments() {
 		for (const r of this._rays.data) {
 			this._ctx.strokeStyle = `#00${(255-Math.round(r.dist * 255 / 500)).toString(16)}00`
 			this._ctx.beginPath()
@@ -106,10 +106,10 @@ export class Grille implements IGrille {
 		}
 	}
 
-	dessine () {
-		this.dessineGrille()
-		this.dessineBlocks()
-		this.dessineRayons()
+	draw () {
+		this.drawGrid()
+		this.drawBlocks()
+		this.drawSegments()
 	}
 
 	private _coordonneesSourisDansGrille (
@@ -134,4 +134,4 @@ export class Grille implements IGrille {
 	}
 }
 
-export default Grille
+export default Grid

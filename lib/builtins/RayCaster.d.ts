@@ -1,7 +1,7 @@
 import type { IRay, IRays } from "../Rays";
 import type { IRayCasterConfig, IRayCaster } from "../RayCaster";
 export declare class RayCaster implements IRayCaster {
-    private readonly _grille;
+    private readonly _grid;
     private _rays;
     constructor(cfg: IRayCasterConfig);
     get rays(): IRays;

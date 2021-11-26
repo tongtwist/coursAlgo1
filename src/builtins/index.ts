@@ -1,4 +1,4 @@
-export * from "./Grille"
+export * from "./Grid"
 export * from "./KeyboardController"
 export * from "./Point"
 export * from "./RayCaster"

@@ -1,4 +1,4 @@
-import type { IGrille } from "./Grille"
+import type { IGrid } from "./Grid"
 import type {
 	IRay,
 	IRays
@@ -6,7 +6,7 @@ import type {
 
 
 export interface IRayCasterConfig {
-	readonly grille: IGrille
+	readonly grid: IGrid
 	readonly rays: IRays
 }
 

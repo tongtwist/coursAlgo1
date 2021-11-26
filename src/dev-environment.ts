@@ -1,12 +1,12 @@
 import type {
 	IRays,
 	IPoint,
-	IGrille,
+	IGrid,
 	IView3D,
 	IKeyboardController,
 	IRayCaster
 } from "."
-import Grille from "./builtins/Grille.js"
+import Grille from "./builtins/Grid.js"
 import Point from "./builtins/Point.js"
 import View3D from "./builtins/View3D.js"
 import KeyboardController from "./builtins/KeyboardController.js"
@@ -30,7 +30,7 @@ function init (
 		raysNumber: viewCanvas.width
 	})
 	const blockStyles = { 1: "#992200" }
-	const grille: IGrille = new Grille({
+	const grid: IGrid = new Grille({
 		canvas: mapCanvas,
 		data: [
 			[1,1,1,1,1,1,1,1,1,1],
@@ -45,8 +45,8 @@ function init (
 			[1,1,1,1,1,1,1,1,1,1],
 		],
 		blockStyles,
-		couleurFond: "#EEE",
-		couleurGrille: "#333",
+		bgColor: "#EEE",
+		color: "#333",
 		rays
 	})
 	const point: IPoint = new Point({
@@ -54,32 +54,32 @@ function init (
 		x: 93,
 		y: 417,
 		angle: 0,
-		couleur: "#20E",
+		color: "#20E",
 		rays
 	})
 	
-	const rayCaster: IRayCaster = new RayCaster({ grille, rays })
+	const rayCaster: IRayCaster = new RayCaster({ grid, rays })
 	const view3D: IView3D = new View3D({
 		canvas: viewCanvas,
 		blockStyles,
-		couleurPlafond: "#223355",
-		couleurSol: "#446644",
+		ceilColor: "#223355",
+		groundColor: "#446644",
 		rays
 	})
 
 	const keyboardController: IKeyboardController = new KeyboardController({
 		target: window,
 		keydownHandlers: {
-			"ArrowUp": () => point.deltaAvance = 1,
-			"ArrowDown": () => point.deltaRecule = 1,
-			"ArrowLeft": () => point.deltaPivotGauche = 1,
-			"ArrowRight": () => point.deltaPivotDroite = 1
+			"ArrowUp": () => point.deltaGoForward = 1,
+			"ArrowDown": () => point.deltaGoBackward = 1,
+			"ArrowLeft": () => point.deltaLeftRotation = 1,
+			"ArrowRight": () => point.deltaRightRotation = 1
 		},
 		keyupHandlers: {
-			"ArrowUp": () => point.deltaAvance = 0,
-			"ArrowDown": () => point.deltaRecule = 0,
-			"ArrowLeft": () => point.deltaPivotGauche = 0,
-			"ArrowRight": () => point.deltaPivotDroite = 0
+			"ArrowUp": () => point.deltaGoForward = 0,
+			"ArrowDown": () => point.deltaGoBackward = 0,
+			"ArrowLeft": () => point.deltaLeftRotation = 0,
+			"ArrowRight": () => point.deltaRightRotation = 0
 		},
 		preventDefaults: false
 	})
@@ -90,11 +90,11 @@ function init (
 	function render () {
 		const newTime: number = Date.now()
 		const delay: number = newTime - lastTime
-		point.deplace(delay)
+		point.move(delay)
 		rayCaster.castAll( point.x, point.y )
-		grille.dessine()
-		point.dessine()
-		view3D.dessine()
+		grid.draw()
+		point.draw()
+		view3D.draw()
 		lastTime = newTime
 	}
 	setInterval(render, delay)

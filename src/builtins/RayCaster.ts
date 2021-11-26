@@ -1,4 +1,4 @@
-import type { IGrille } from "../Grille"
+import type { IGrid } from "../Grid"
 import type {
 	IRay,
 	IRays
@@ -11,11 +11,11 @@ import { Rays } from "./Rays.js"
 
 
 export class RayCaster implements IRayCaster {
-	private readonly _grille: IGrille
+	private readonly _grid: IGrid
 	private _rays: IRays
 
 	constructor (cfg: IRayCasterConfig) {
-		this._grille = cfg.grille
+		this._grid = cfg.grid
 		this._rays = cfg.rays
 	}
 
@@ -40,21 +40,21 @@ export class RayCaster implements IRayCaster {
 		const tan: number = ray.tan
 		const atan: number = ray.atan
 		if (a > Math.PI) {
-			ry = Math.floor(y / this._grille.blockHeight) * this._grille.blockHeight - 0.0000001
+			ry = Math.floor(y / this._grid.blockHeight) * this._grid.blockHeight - 0.0000001
 			rx = (y - ry) * atan + x
-			yo = -this._grille.blockHeight
+			yo = -this._grid.blockHeight
 			xo = -yo * atan
 		}
 		if (a < Math.PI) {
-			ry = Math.floor(y / this._grille.blockHeight) * this._grille.blockHeight + this._grille.blockHeight
+			ry = Math.floor(y / this._grid.blockHeight) * this._grid.blockHeight + this._grid.blockHeight
 			rx = (y - ry) * atan + x
-			yo = this._grille.blockHeight
+			yo = this._grid.blockHeight
 			xo = -yo * atan
 		}
-		while (j >= 0 && j < this._grille.nbLignes && !hit) {
-			i = Math.floor(rx / this._grille.blockWidth)
-			j = Math.floor(ry / this._grille.blockHeight)
-			hit = j >= 0 && j < this._grille.nbLignes && i >= 0 && i < this._grille.nbColonnes && this._grille.data[j][i] > 0
+		while (j >= 0 && j < this._grid.linesNumber && !hit) {
+			i = Math.floor(rx / this._grid.blockWidth)
+			j = Math.floor(ry / this._grid.blockHeight)
+			hit = j >= 0 && j < this._grid.linesNumber && i >= 0 && i < this._grid.columnsNumber && this._grid.data[j][i] > 0
 			if (!hit) {
 				rx += xo
 				ry += yo
@@ -76,21 +76,21 @@ export class RayCaster implements IRayCaster {
 		const piSur2: number = Math.PI / 2
 		const pi3: number = 3 * piSur2
 		if (a > piSur2 && a < pi3) {
-			rx = Math.floor(x / this._grille.blockWidth) * this._grille.blockWidth - 0.0001
+			rx = Math.floor(x / this._grid.blockWidth) * this._grid.blockWidth - 0.0001
 			ry = (x - rx) * ntan + y
-			xo = -this._grille.blockWidth
+			xo = -this._grid.blockWidth
 			yo = -xo * ntan
 		}
 		if (a < piSur2 || a > pi3) {
-			rx = Math.floor(x / this._grille.blockWidth) * this._grille.blockWidth + this._grille.blockWidth
+			rx = Math.floor(x / this._grid.blockWidth) * this._grid.blockWidth + this._grid.blockWidth
 			ry = (x - rx) * ntan + y
-			xo = this._grille.blockWidth
+			xo = this._grid.blockWidth
 			yo = -xo * ntan
 		}
-		while (j >= 0 && j < this._grille.nbLignes && !hit) {
-			i = Math.floor(rx / this._grille.blockWidth)
-			j = Math.floor(ry / this._grille.blockHeight)
-			hit = j >= 0 && j < this._grille.nbLignes && i >= 0 && i < this._grille.nbColonnes && this._grille.data[j][i] > 0
+		while (j >= 0 && j < this._grid.linesNumber && !hit) {
+			i = Math.floor(rx / this._grid.blockWidth)
+			j = Math.floor(ry / this._grid.blockHeight)
+			hit = j >= 0 && j < this._grid.linesNumber && i >= 0 && i < this._grid.columnsNumber && this._grid.data[j][i] > 0
 			if (!hit) {
 				rx += xo
 				ry += yo
@@ -112,7 +112,7 @@ export class RayCaster implements IRayCaster {
 			ray.colBlock = hi
 			ray.ligBlock = hj
 		}
-		ray.blockType = this._grille.data[ray.ligBlock][ray.colBlock]
+		ray.blockType = this._grid.data[ray.ligBlock][ray.colBlock]
 		ray.orig[0] = x
 		ray.orig[1] = y
 	}

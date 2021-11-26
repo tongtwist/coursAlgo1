@@ -1,4 +1,4 @@
-export * from "./Grille";
+export * from "./Grid";
 export * from "./View3D";
 export * from "./Rays";
 export * from "./KeyboardController";

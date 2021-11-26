@@ -10,11 +10,11 @@ export class View3D implements IView3D {
 	private _ctx: CanvasRenderingContext2D
 	private _midHeight: number
 	private _rays: IRays
-	private readonly _nbColonnes: number
+	private readonly _columnsNumber: number
 	distances: Array<number>
 	hitWhat: Array<number>
-	couleurSol: string
-	couleurPlafond: string
+	groundColor: string
+	ceilColor: string
 	private _blockStyles: { [k: number]: string }
 
 	constructor (cfg: IView3DConfig) {
@@ -22,59 +22,59 @@ export class View3D implements IView3D {
 		this._ctx = cfg.canvas.getContext("2d", { alpha: false }) as CanvasRenderingContext2D
 		this._midHeight = Math.round(this._canvas.height / 2) | 0
 		this._rays = cfg.rays
-		this._nbColonnes = cfg.canvas.width
-		this.distances = Array(this._nbColonnes)
-		this.hitWhat = Array(this._nbColonnes)
-		this.couleurPlafond = cfg.couleurPlafond
-		this.couleurSol = cfg.couleurSol
+		this._columnsNumber = cfg.canvas.width
+		this.distances = Array(this._columnsNumber)
+		this.hitWhat = Array(this._columnsNumber)
+		this.ceilColor = cfg.ceilColor
+		this.groundColor = cfg.groundColor
 		this._blockStyles = cfg.blockStyles
 	}
 
-	dessineSol () {
+	drawGround () {
 		const top: number = (this._midHeight + 1) | 0
-		this._ctx.fillStyle = this.couleurSol
+		this._ctx.fillStyle = this.groundColor
 		this._ctx.fillRect(0, top, this._canvas.width, this._canvas.height - top)
 		this._ctx.fill()
 	}
 
-	dessinePlafond () {
-		this._ctx.fillStyle = this.couleurPlafond
+	drawCeil () {
+		this._ctx.fillStyle = this.ceilColor
 		this._ctx.fillRect(0, 0, this._canvas.width, this._midHeight)
 		this._ctx.fill()
 	}
 
-	dessineMurs () {
-		let lastCouleur: string = ""
+	drawWalls () {
+		let lastcolor: string = ""
 		let left = 0
-		const largeurColonne: number = Math.round(this._canvas.width / this._rays.data.length) | 0
+		const columnWidth: number = Math.round(this._canvas.width / this._rays.data.length) | 0
 		const txHeight: number = (50 * this._canvas.height) | 0
 		for (const ray of this._rays.data) {
 			const block: number = ray.blockType
-			const couleur: string
+			const color: string
 				= ray.vhit
 				? this._blockStyles[block]
 				: "#882211"
-			if (couleur !== lastCouleur) {
-				if (lastCouleur !== "") {
+			if (color !== lastcolor) {
+				if (lastcolor !== "") {
 					this._ctx.fill()
 				}
-				lastCouleur = couleur
-				this._ctx.fillStyle = couleur
+				lastcolor = color
+				this._ctx.fillStyle = color
 			}
-			const hauteurLigne: number = Math.min(this._canvas.height, Math.round(txHeight / ray.dist) | 0) | 0
-			const offset: number = Math.round((this._canvas.height - hauteurLigne) / 2) | 0
-			this._ctx.fillRect(left, offset, largeurColonne, hauteurLigne)
-			left += largeurColonne
+			const lineHeight: number = Math.min(this._canvas.height, Math.round(txHeight / ray.dist) | 0) | 0
+			const offset: number = Math.round((this._canvas.height - lineHeight) / 2) | 0
+			this._ctx.fillRect(left, offset, columnWidth, lineHeight)
+			left += columnWidth
 		}
-		if (lastCouleur !== "") {
+		if (lastcolor !== "") {
 			this._ctx.fill()
 		}
 	}
 
-	dessine () {
-		this.dessineSol()
-		this.dessinePlafond()
-		this.dessineMurs()
+	draw () {
+		this.drawGround()
+		this.drawCeil()
+		this.drawWalls()
 	}
 }
 

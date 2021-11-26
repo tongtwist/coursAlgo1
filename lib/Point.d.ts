@@ -4,18 +4,18 @@ export interface IPointConfig {
     readonly x: number;
     readonly y: number;
     readonly angle: number;
-    readonly couleur: string;
+    readonly color: string;
     readonly rays: IRays;
 }
 export interface IPoint {
     readonly x: number;
     readonly y: number;
     readonly angle: number;
-    deltaPivotGauche: number;
-    deltaPivotDroite: number;
-    deltaAvance: number;
-    deltaRecule: number;
-    calculeDeplacement(deltaT: number): [number, number];
-    deplace(deltaT: number): void;
-    dessine(): void;
+    deltaLeftRotation: number;
+    deltaRightRotation: number;
+    deltaGoForward: number;
+    deltaGoBackward: number;
+    computeMove(deltaT: number): [number, number];
+    move(deltaT: number): void;
+    draw(): void;
 }

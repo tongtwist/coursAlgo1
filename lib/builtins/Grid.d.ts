@@ -1,40 +1,40 @@
-import type { IGrilleConfig, IGrille } from "../Grid";
-export declare class Grille implements IGrille {
+import type { IGridConfig, IGrid } from "../Grid";
+export declare class Grid implements IGrid {
     private readonly _canvas;
     private readonly _ctx;
     private _data;
-    private _nbColonnes;
-    private _nbLignes;
+    private _columnsNumber;
+    private _linesNumber;
     blockStyles: {
         [blockValue: number]: string;
     };
-    couleurFond: string;
-    couleurGrille: string;
+    bgColor: string;
+    color: string;
     private _blockHeight;
     private _blockWidth;
-    rayons: Array<{
+    segments: Array<{
         x1: number;
         y1: number;
         x2: number;
         y2: number;
     }>;
     private _rays;
-    constructor(opts: IGrilleConfig);
+    constructor(opts: IGridConfig);
     get data(): Array<Array<number>>;
     set data(value: Array<Array<number>>);
-    get nbColonnes(): number;
-    set nbColonnes(_value: number);
-    get nbLignes(): number;
-    set nbLignes(_value: number);
+    get columnsNumber(): number;
+    set columnsNumber(_value: number);
+    get linesNumber(): number;
+    set linesNumber(_value: number);
     get blockHeight(): number;
     set blockHeight(_value: number);
     get blockWidth(): number;
     set blockWidth(_value: number);
-    dessineGrille(): void;
-    dessineBlocks(): void;
-    dessineRayons(): void;
-    dessine(): void;
+    drawGrid(): void;
+    drawBlocks(): void;
+    drawSegments(): void;
+    draw(): void;
     private _coordonneesSourisDansGrille;
     private _switchBlock;
 }
-export default Grille;
+export default Grid;

@@ -1,4 +1,7 @@
-import type { IRays } from "../Rays"
+import type {
+	Position,
+	IRays
+} from "../Rays"
 import type {
 	IPointConfig,
 	IPoint
@@ -8,17 +11,17 @@ import { Rays } from "./Rays.js"
 
 
 export class Point implements IPoint {
-	private static _vPivot: number = 5
+	private static _vRotation: number = 5
 	private static _vTranslation: number = 100
 	private _ctx: CanvasRenderingContext2D
 	private _x: number
 	private _y: number
 	private _angle: number
-	couleur: string
-	deltaPivotGauche: number
-	deltaPivotDroite: number
-	deltaAvance: number
-	deltaRecule: number
+	color: string
+	deltaLeftRotation: number
+	deltaRightRotation: number
+	deltaGoForward: number
+	deltaGoBackward: number
 	private _rays: IRays
 
 	constructor (opts: IPointConfig) {
@@ -26,11 +29,11 @@ export class Point implements IPoint {
 		this._x = opts.x
 		this._y = opts.y
 		this._angle = opts.angle
-		this.couleur = opts.couleur
-		this.deltaPivotGauche = 0
-		this.deltaPivotDroite = 0
-		this.deltaAvance = 0
-		this.deltaRecule = 0
+		this.color = opts.color
+		this.deltaLeftRotation = 0
+		this.deltaRightRotation = 0
+		this.deltaGoForward = 0
+		this.deltaGoBackward = 0
 		this._rays = opts.rays
 	}
 
@@ -43,32 +46,31 @@ export class Point implements IPoint {
 	get angle () { return this._angle }
 	set angle (_value: number) {}
 
-	calculeDeplacement (deltaT: number): [ number, number ] {
+	computeMove (deltaT: number): Position {
 		const normeV: number
 			= Point._vTranslation * deltaT * 0.001
-			* (this.deltaAvance - this.deltaRecule)
+			* (this.deltaGoForward - this.deltaGoBackward)
 		const x: number = Math.cos(this._angle) * normeV
 		const y: number = Math.sin(this._angle) * normeV
 		return [x, y]
 	}
 
-	deplace (deltaT: number) {
-		const totalPivot: number
-			= this.deltaPivotGauche - this.deltaPivotDroite
-		if (totalPivot !== 0) {
+	move (deltaT: number) {
+		const rotation: number
+			= this.deltaLeftRotation - this.deltaRightRotation
+		if (rotation !== 0) {
 			const deltaAngle: number
-				= totalPivot * Point._vPivot * deltaT * -0.001
+				= rotation * Point._vRotation * deltaT * -0.001
 			this._angle = Rays.fixAngle(this._angle + deltaAngle)
 			this._rays.centerAngle = this._angle
 		}
-		const v: [ number, number ]
-			= this.calculeDeplacement(deltaT)
+		const v: Position = this.computeMove(deltaT)
 		this._x += v[0]
 		this._y += v[1]
 	}
 	
-	dessine () {
-		this._ctx.strokeStyle = this.couleur
+	draw () {
+		this._ctx.strokeStyle = this.color
 		this._ctx.beginPath()
 		this._ctx.moveTo(this._x, this._y)
 		this._ctx.arc(this._x, this._y, 10, this._angle + Math.PI * .25, this._angle + Math.PI * 1.75, false)
