@@ -1,27 +1,19 @@
-import {
-	IGrille,
-	Grille
-} from "./Grille.js"
-import {
-	IPoint,
-	Point
-} from "./Point.js"
-import {
-	IView3D,
-	View3D
-} from "./View3D.js"
-import {
-	IKeyboardController,
-	KeyboardController
-} from "./KeyboardController.js"
-import {
+import type {
 	IRays,
-	Rays
-} from "./Rays.js"
+	IPoint,
+	IGrille,
+	IView3D,
+	IKeyboardController,
+	IRayCaster
+} from "."
 import {
-	IRayCaster,
+	Grille,
+	Point,
+	View3D,
+	KeyboardController,
+	Rays,
 	RayCaster
-} from "./RayCaster.js"
+} from "./builtins"
 
 
 /**
