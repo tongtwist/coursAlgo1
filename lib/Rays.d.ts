@@ -1,5 +1,9 @@
 /**
- * Interface that must match a configuration object given to the constructor of any class that implements [[IRay]]
+ * @module
+ * Rays interfaces
+ */
+/**
+ * Interface of a configuration object given to the constructor of any class that implements [[IRay]]
  *
  * @export
  * @interface IRaysConfig
