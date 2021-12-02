@@ -1,5 +1,23 @@
+/**
+ * @module
+ * Builtin IGrid implementation
+ */
 import type { IGridConfig, IGrid } from "../Grid";
+/**
+ * Builtin implementation of an IGrid
+ *
+ * @export
+ * @class Grid
+ * @implements {IGrid}
+ */
 export declare class Grid implements IGrid {
+    /**
+     * Stored reference to the canvas in which this grid have to be drawn
+     *
+     * @private
+     * @type {HTMLCanvasElement}
+     * @memberof Grid
+     */
     private readonly _canvas;
     private readonly _ctx;
     private _data;

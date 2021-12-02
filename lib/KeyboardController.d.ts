@@ -1,6 +1,6 @@
 /**
  * @module
- * KeyboardController interfaces
+ * Keyboard Controller interfaces
  */
 /**
  * Keyboard Event Handler function

@@ -1,3 +1,8 @@
+/**
+ * @module
+ * Builtin IGrid implementation
+ */
+
 import type { IRays} from "../Rays"
 import type {
 	IGridConfig,
@@ -5,7 +10,21 @@ import type {
 } from "../Grid"
 
 
+/**
+ * Builtin implementation of an IGrid
+ *
+ * @export
+ * @class Grid
+ * @implements {IGrid}
+ */
 export class Grid implements IGrid {
+	/**
+	 * Stored reference to the canvas in which this grid have to be drawn
+	 *
+	 * @private
+	 * @type {HTMLCanvasElement}
+	 * @memberof Grid
+	 */
 	private readonly _canvas: HTMLCanvasElement
 	private readonly _ctx: CanvasRenderingContext2D
 	private _data: Array<Array<number>>

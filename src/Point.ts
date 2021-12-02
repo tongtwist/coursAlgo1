@@ -1,6 +1,6 @@
 /**
  * @module
- * IPoint interfaces
+ * Point interfaces
  */
 
 import type { IRays } from "./Rays"
